@@ -18,85 +18,102 @@ export function ParkingLotPage() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchSpaces = async () => {
+  // (ฟังก์ชัน fetch แยกออกมาเพื่อให้เรียกซ้ำได้)
+  const fetchSpaces = async (isManualRefresh = false) => {
+    // (ถ้าไม่ได้กด Refresh เอง หรือไม่ใช่ครั้งแรก ไม่ต้องโชว์ Loading)
+    if (isManualRefresh || spaces.length === 0) {
       setIsLoading(true);
-      setError(null);
-      try {
-        const response = await apiClient.get('/spaces', {
-          params: { page_size: 100 }
-        });
-        setSpaces(response.data.data);
-      } catch (err: any) {
-        console.error('Failed to fetch spaces:', err);
-        setError('Failed to load parking spaces. Please try again.');
-        if (err.response?.status === 401) {
-          // ถ้า Token หมดอายุ ให้เด้งไปหน้า Login
-          localStorage.removeItem('accessToken');
-          navigate('/login');
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchSpaces();
-  }, [navigate]); // เพิ่ม navigate ใน dependency array
+    }
+    setError(null);
+    try {
+      const response = await apiClient.get('/spaces', {
+        params: { page_size: 100 }
+      });
+      // (เรียงข้อมูลตาม 'code' เพื่อให้ A-01 มาก่อน A-02)
+      const sortedSpaces = response.data.data.sort((a: Space, b: Space) => 
+        a.code.localeCompare(b.code, undefined, { numeric: true })
+      );
+      setSpaces(sortedSpaces);
 
-  // ฟังก์ชันเมื่อผู้ใช้กดจองช่องจอด
+    } catch (err: any) {
+      console.error('Failed to fetch spaces:', err);
+      setError('Failed to load parking spaces. Please try again.');
+      if (err.response?.status === 401) {
+        localStorage.removeItem('accessToken');
+        navigate('/login');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSpaces(true); // โหลดครั้งแรก (โชว์ Loading)
+    
+    // --- (เพิ่ม Interval) ---
+    // ดึงข้อมูลใหม่ทุก 15 วินาที เพื่ออัปเดตสถานะ
+    const intervalId = setInterval(() => fetchSpaces(false), 15000); 
+
+    // คืนค่า interval เมื่อ component ถูก unmount
+    return () => clearInterval(intervalId);
+    
+  }, [navigate]); // (เอา spaces.length ออกจาก dependency array)
+
+  // --- (*** นี่คือจุดที่แก้ไข ***) ---
   const handleReserveClick = (space: Space) => {
     if (space.status !== 'AVAILABLE') {
       alert(`Space ${space.code} is not available.`);
       return;
     }
-    // TODO: สร้างหน้าใหม่สำหรับยืนยันการจองและกรอกเลขทะเบียน
-    // โดยส่งข้อมูล space ไปด้วย
-    console.log(`Reserving space: ${space.code} (ID: ${space.id})`);
     
-    // ตัวอย่างการส่งต่อไปยังหน้าใหม่ (คุณต้องสร้างหน้านี้และ Route ใน main.tsx)
-    // navigate('/reserve-confirm', { state: { spaceId: space.id, spaceCode: space.code } });
-    
-    alert(`Initiating reservation for ${space.code}... (Implement next step: Vehicle Plate Input)`);
+    // (ใช้ navigate เพื่อส่งต่อไปยังหน้ายืนยัน)
+    navigate('/reserve-confirm', { 
+      state: { spaceId: space.id, spaceCode: space.code } 
+    });
   };
-
-  // --- ส่วนแสดงผลตอน Loading ---
-  if (isLoading) {
+  // --- (สิ้นสุดการแก้ไข) ---
+  
+  // --- (ส่วนแสดงผล) ---
+  if (isLoading && spaces.length === 0) { // (โชว์ Loading แค่ครั้งแรกสุด)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="container mx-auto p-4 text-center text-gray-400">
         Loading parking spaces...
       </div>
     );
   }
 
-  // --- ส่วนแสดงผลตอน Error ---
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-red-500 p-4 text-center">
+      <div className="container mx-auto p-4 text-center text-red-500">
         <h2 className="text-xl mb-4">Error</h2>
         <p>{error}</p>
       </div>
     );
   }
-
-  // --- ส่วนแสดงผลหลัก ---
   
-  // กรองช่องจอดแยกตามสถานะ
+  // (แยกโซน)
   const availableSpaces = spaces.filter(s => s.status === 'AVAILABLE');
-  const occupiedSpaces = spaces.filter(s => s.status === 'OCCUPIED' || s.status === 'PENDING_VACATE');
   const reservedSpaces = spaces.filter(s => s.status === 'RESERVED');
+  const occupiedSpaces = spaces.filter(s => s.status === 'OCCUPIED' || s.status === 'PENDING_VACATE');
 
   return (
-    // Container หลัก (ไม่มี MainLayout เพราะหน้านี้มี Navbar ของตัวเอง)
-    // <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-6 md:p-8">
-    // (หมายเหตุ: โค้ดนี้อยู่ใน MainLayout แล้ว จึงไม่จำเป็นต้องมี min-h-screen หรือ bg-gray-900 อีก)
-    
-    <div className="container mx-auto p-4"> {/* ใช้ Padding จาก MainLayout แล้ว */}
+    <div className="container mx-auto p-4">
       
-      {/* ส่วนช่องจอดที่ว่าง */}
-      <h2 className="text-2xl sm:text-3xl font-bold text-green-400 mb-4">
-        Available Parking Spaces
-      </h2>
+      {/* (เพิ่มปุ่ม Refresh) */}
+      <div className="flex justify-between items-center mb-4">
+         <h2 className="text-2xl sm:text-3xl font-bold text-green-400">
+          Available Parking Spaces
+         </h2>
+         <button
+            onClick={() => fetchSpaces(true)} // (กด Refresh ให้โชว์ Loading)
+            disabled={isLoading}
+            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+          >
+            {isLoading ? 'Refreshing...' : 'Refresh'}
+         </button>
+      </div>
       
-      {/* Grid Layout (Responsive) */}
+      {/* (Grid Layout) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
         {availableSpaces.map((space) => (
             <button
@@ -117,11 +134,11 @@ export function ParkingLotPage() {
           ))}
       </div>
       
-      {availableSpaces.length === 0 && (
+      {availableSpaces.length === 0 && !isLoading && (
           <p className="text-gray-400 mt-4">No available spaces found.</p>
       )}
 
-      {/* ส่วนช่องจอดที่ถูกจอง (RESERVED) */}
+      {/* (Reserved Spaces) */}
       <h3 className="text-xl sm:text-2xl font-bold text-yellow-400 mt-8 mb-4">
         Reserved Spaces
       </h3>
@@ -145,7 +162,7 @@ export function ParkingLotPage() {
           <p className="text-gray-500 mt-4">No reserved spaces.</p>
       )}
 
-      {/* ส่วนช่องจอดที่ไม่ว่าง (OCCUPIED / PENDING_VACATE) */}
+      {/* (Occupied Spaces) */}
       <h3 className="text-xl sm:text-2xl font-bold text-red-400 mt-8 mb-4">
         Occupied Spaces
       </h3>

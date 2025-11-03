@@ -1,6 +1,6 @@
 // src/pages/RegisterPage.tsx
 
-import { useState } from 'react'; // ลบ React ออก
+import { useState, useEffect } from 'react'; // <-- 1. เพิ่ม useEffect
 import { Link, useNavigate } from 'react-router-dom';
 import apiClient from '../services/api';
 
@@ -10,14 +10,24 @@ export function RegisterPage() {
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // เพิ่ม state สำหรับ loading
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  // --- (เพิ่ม useEffect เพื่อ Redirect) ---
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      console.log('User is already logged in. Redirecting to /dashboard.');
+      navigate('/dashboard', { replace: true }); // (แก้เป็น /dashboard)
+    }
+  }, [navigate]);
+  // --- (สิ้นสุดการเพิ่ม) ---
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-    setIsLoading(true); // เริ่ม loading
+    setIsLoading(true);
 
     try {
       await apiClient.post('/auth/register', {
@@ -42,21 +52,18 @@ export function RegisterPage() {
       } else {
         setError('Registration failed. Please try again.');
       }
-      setIsLoading(false); // หยุด loading ถ้า error
+      setIsLoading(false);
     }
-    // ไม่ต้อง setIsLoading(false) ที่นี่ เพราะจะ redirect ไปเลยถ้าสำเร็จ
   };
 
   return (
-    // Container หลัก: จัดกลาง, กำหนด padding, พื้นหลัง
+    // (ส่วน JSX เหมือนเดิมทั้งหมด)
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4 sm:p-6">
-
-      {/* กล่อง Form */}
       <div className="w-full max-w-xs sm:max-w-sm bg-gray-800 p-6 sm:p-8 rounded-lg shadow-xl">
         <h2 className="text-xl sm:text-2xl font-bold text-center text-blue-400 mb-6">Register</h2>
         <form onSubmit={handleSubmit}>
-          {/* Email Input */}
-          <div className="mb-4">
+          {/* ... (เนื้อหา Form เหมือนเดิม) ... */}
+           <div className="mb-4">
             <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="email">
               Email
             </label>
@@ -71,8 +78,6 @@ export function RegisterPage() {
               placeholder="you@example.com"
             />
           </div>
-
-          {/* Password Input */}
           <div className="mb-4">
             <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="password">
               Password
@@ -89,8 +94,6 @@ export function RegisterPage() {
               placeholder="********"
             />
           </div>
-
-          {/* Name Input */}
           <div className="mb-6">
             <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="name">
               Name (Optional)
@@ -104,13 +107,8 @@ export function RegisterPage() {
               className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 text-white leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
             />
           </div>
-
-
-          {/* Error/Success Messages */}
           {error && <p className="text-red-500 text-xs italic mb-4">{error}</p>}
           {success && <p className="text-green-500 text-xs italic mb-4">{success}</p>}
-
-          {/* Submit Button */}
           <div className="flex items-center justify-between">
             <button
               type="submit"
@@ -121,8 +119,6 @@ export function RegisterPage() {
             </button>
           </div>
         </form>
-
-        {/* Login Link */}
         <p className="mt-6 text-center text-gray-400 text-xs sm:text-sm">
           Already have an account?{' '}
           <Link to="/login" className="text-blue-400 hover:text-blue-300">
@@ -130,7 +126,6 @@ export function RegisterPage() {
           </Link>
         </p>
       </div>
-
     </div>
   );
 }

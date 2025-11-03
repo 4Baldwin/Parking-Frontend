@@ -3,19 +3,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import HomePage from './pages/HomePage'; // <-- หน้าหลัก
+import HomePage from './pages/HomePage';
 import './styles/index.css';
 import { LoginPage } from './pages/LoginPage.tsx';
 import { RegisterPage } from './pages/RegisterPage.tsx';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage.tsx';
 import { ResetPasswordPage } from './pages/ResetPasswordPage.tsx';
 import { ParkingLotPage } from './pages/ParkingLotPage.tsx';
-import { MainLayout } from './components/layout/MainLayout'; // <-- 1. Import MainLayout
+import { MainLayout } from './components/layout/MainLayout';
+import { ReservationConfirmPage } from './pages/ReservationConfirmPage.tsx';
+import { PaymentPage } from './pages/PaymentPage.tsx';
+
+// --- (เพิ่ม Import 1 บรรทัดสำหรับ Dashboard) ---
+import { DashboardPage } from './pages/DashboardPage.tsx'; // (ไฟล์ที่เราเพิ่งสร้าง)
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <HomePage />, // หน้าแรกแสดง HomePage (ไม่มี Navbar)
+    element: <HomePage />,
   },
   {
     path: '/login',
@@ -34,16 +39,25 @@ const router = createBrowserRouter([
     element: <ResetPasswordPage />,
   },
   {
-    // --- 2. ใช้ MainLayout เป็น element หลักสำหรับกลุ่ม Route ที่ต้องการ Navbar ---
-    element: <MainLayout />,
-    // --- 3. ย้าย Route ที่ต้องการ Navbar มาเป็น children ---
+    element: <MainLayout />, // (หน้าที่มี Navbar)
     children: [
+      // --- (เพิ่ม Route /dashboard) ---
       {
-        path: '/parking', // Route นี้จะแสดง Navbar + ParkingLotPage
+        path: '/dashboard',
+        element: <DashboardPage />,
+      },
+      {
+        path: '/parking',
         element: <ParkingLotPage />,
       },
-      // คุณสามารถเพิ่ม Route อื่นๆ ที่ต้องการ Navbar ที่นี่
-      // เช่น { path: '/my-tickets', element: <MyTicketsPage /> },
+      {
+        path: '/reserve-confirm',
+        element: <ReservationConfirmPage />,
+      },
+      {
+        path: '/payment/:ticketId',
+        element: <PaymentPage />,
+      },
     ],
   },
 ]);
