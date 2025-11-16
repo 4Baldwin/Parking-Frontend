@@ -1,3 +1,7 @@
+## ส่วน Frontend ของวิทยานิพนธ์ ConnectAPark
+-> ยังไม่เสร็จสมบูรณ์
+## 
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
