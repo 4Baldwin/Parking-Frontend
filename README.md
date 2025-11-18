@@ -55,3 +55,7 @@ src/
  │   └── index.css
  │
  └── main.tsx
+```
+## 👨‍💻 Developer
+**Supawat Arrakrattanakun (4Baldwin)**  
+ConnectAPark → Thesis Project → Rangsit University
