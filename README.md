@@ -2,8 +2,8 @@
 Frontend for **Smart Parking Management System (Thesis Project)**  
 Built with **React**, **TypeScript**, **React Router**, และ **Tailwind CSS**
 
-> ⚠️ **Status:** This project is still under development and not yet fully completed.  
-> ⚠️ **สถานะ:** โปรเจกต์นี้ยังอยู่ระหว่างการพัฒนา และยังไม่เสร็จสมบูรณ์.
+> ⚠️ **Status:** This frontend is still under development and not yet fully completed.  
+> ⚠️ **สถานะ:** Frontend นี้ยังอยู่ระหว่างการพัฒนา และยังไม่เสร็จสมบูรณ์.
 
 
 ---
