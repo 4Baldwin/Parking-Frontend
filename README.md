@@ -1,77 +1,57 @@
-## ส่วน Frontend ของวิทยานิพนธ์ ConnectAPark
--> ยังไม่เสร็จสมบูรณ์
-## 
+# 🖥️ ConnectAPark – Parking Frontend  
+Frontend for **Smart Parking Management System (Thesis Project)**  
+Built with **React**, **TypeScript**, **React Router**, และ **Tailwind CSS**
 
-# React + TypeScript + Vite
+> ⚠️ **Status:** This project is still under development and not yet fully completed.  
+> ⚠️ **สถานะ:** โปรเจกต์นี้ยังอยู่ระหว่างการพัฒนา และยังไม่เสร็จสมบูรณ์.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📌 Overview
 
-## React Compiler
+ConnectAPark Frontend เป็นส่วนติดต่อผู้ใช้ของระบบ Smart Parking ที่เชื่อมต่อกับ Backend (Parking API) ผ่าน REST API  
+โปรเจคนี้ยังอยู่ในระหว่างการพัฒนาและยังไม่สมบูรณ์ ฟังก์ชันหลายส่วนอาจยังไม่พร้อมใช้งานหรือไม่ได้ทำงานครบถ้วน
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🏗️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Layer | Technology |
+|-------|------------|
+| Framework | **React 18** |
+| Language | **TypeScript** |
+| Routing | **React Router DOM** |
+| HTTP Client | **Axios** |
+| Styling | **Tailwind CSS** |
+| Build Tool | **Vite** |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📂 Folder Structure (สำคัญ)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+```bash
+src/
+ ├── components/
+ │   └── layout/
+ │       ├── MainLayout.tsx
+ │       └── Navbar.tsx
+ │
+ ├── pages/
+ │   ├── HomePage.tsx
+ │   ├── LoginPage.tsx
+ │   ├── RegisterPage.tsx
+ │   ├── ForgotPasswordPage.tsx
+ │   ├── ResetPasswordPage.tsx
+ │   ├── ParkingLotPage.tsx
+ │   ├── ReservationConfirmPage.tsx
+ │   ├── DashboardPage.tsx
+ │   └── PaymentPage.tsx
+ │
+ ├── services/
+ │   └── api.ts
+ │
+ ├── styles/
+ │   └── index.css
+ │
+ └── main.tsx
